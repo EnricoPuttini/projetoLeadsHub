@@ -1,0 +1,27 @@
+# dependências
+node_modules/
+
+# Next.js
+.next/
+out/
+build/
+
+# Variáveis de Ambiente (A PARTE MAIS IMPORTANTE 🔐)
+.env
+.env*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel/
+
+# Outros arquivos do sistema
+.DS_Store
+*.pem
+
+# Dados de Prospecção e Scripts Locais
+*.csv
+*.xlsx
+backend/
