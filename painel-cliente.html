@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leads B2B — Painel do Cliente</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8f7f4;
+  --surface: #ffffff;
+  --border: #e8e6e0;
+  --border2: #d4d0c8;
+  --text: #1a1917;
+  --muted: #8a8680;
+  --accent: #2563eb;
+  --accent-bg: #eff6ff;
+  --green: #16a34a;
+  --green-bg: #f0fdf4;
+  --amber: #d97706;
+  --amber-bg: #fffbeb;
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+  --purple: #7c3aed;
+  --purple-bg: #f5f3ff;
+  --teal: #0d9488;
+  --teal-bg: #f0fdfa;
+  --font: 'Plus Jakarta Sans', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --radius: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+
+/* Top bar */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.brand-name { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+.brand-name span { color: var(--accent); }
+.topbar-meta { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+
+/* Layout */
+.layout { display: flex; min-height: calc(100vh - 53px); }
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  position: sticky;
+  top: 53px;
+  height: calc(100vh - 53px);
+  overflow-y: auto;
+}
+.sidebar-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0 20px;
+  margin-bottom: 8px;
+}
+.filter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 20px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  transition: all 0.15s;
+  border-radius: 0;
+}
+.filter-btn:hover { background: var(--bg); color: var(--text); }
+.filter-btn.active { color: var(--accent); background: var(--accent-bg); font-weight: 600; }
+.filter-btn.active .filter-dot { background: var(--accent); }
+.filter-count {
+  font-family: var(--mono);
+  font-size: 11px;
+  background: var(--border);
+  border-radius: 20px;
+  padding: 1px 7px;
+  font-weight: 400;
+}
+.filter-btn.active .filter-count { background: rgba(37,99,235,0.15); color: var(--accent); }
+
+.grupo-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+.sidebar-divider { height: 1px; background: var(--border); margin: 16px 0; }
+.sidebar-label-row { display: flex; align-items: center; gap: 8px; }
+
+/* Main */
+.main { flex: 1; padding: 24px 28px; min-width: 0; }
+
+/* Search + stats */
+.top-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.search-wrap {
+  flex: 1;
+  position: relative;
+  min-width: 200px;
+}
+.search-wrap svg {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+}
+.search-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px 10px 38px;
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.search-input:focus { border-color: var(--accent); }
+.search-input::placeholder { color: var(--muted); }
+
+.stats-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.chip-num { font-weight: 700; font-size: 14px; color: var(--accent); font-family: var(--mono); }
+
+/* Cards grid */
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.result-count { font-size: 13px; color: var(--muted); }
+.result-count strong { color: var(--text); font-weight: 600; }
+
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--text);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.btn-export:hover { opacity: 0.85; }
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+.lead-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  cursor: default;
+}
+.lead-card:hover {
+  border-color: var(--border2);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+.card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; gap: 8px; }
+.card-empresa { font-size: 14px; font-weight: 600; line-height: 1.35; flex: 1; }
+.grupo-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.card-fields { display: flex; flex-direction: column; gap: 7px; }
+.card-field { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; }
+.field-icon { width: 16px; flex-shrink: 0; margin-top: 1px; color: var(--muted); }
+.field-label { font-size: 10px; color: var(--muted); font-family: var(--mono); margin-bottom: 1px; }
+.field-val { color: var(--text); line-height: 1.35; }
+.field-val.mono { font-family: var(--mono); font-size: 12px; }
+.field-val.empty { color: var(--muted); font-style: italic; font-size: 12px; }
+
+.card-footer {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.mei-badge {
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--mono);
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--amber-bg);
+  color: var(--amber);
+  border: 1px solid #fde68a;
+}
+.me-badge {
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--mono);
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: 1px solid #bfdbfe;
+}
+.card-cnpj { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.card-abertura { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+
+/* WhatsApp button */
+.btn-wpp {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #25d366;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.btn-wpp:hover { opacity: 0.85; }
+
+/* Empty */
+.empty { text-align: center; padding: 80px 20px; color: var(--muted); }
+.empty-icon { font-size: 36px; margin-bottom: 12px; }
+.empty h3 { font-size: 16px; color: var(--text); margin-bottom: 6px; font-weight: 600; }
+.empty p { font-size: 13px; }
+
+/* Responsive */
+@media (max-width: 700px) {
+  .sidebar { display: none; }
+  .main { padding: 16px; }
+  .topbar { padding: 12px 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-dot"></div>
+    <div class="brand-name">Lead<span>Hub</span></div>
+  </div>
+  <div class="topbar-meta" id="topMeta">100 empresas · atualizado hoje</div>
+</div>
+
+<div class="layout">
+
+  <!-- Sidebar filtros -->
+  <aside class="sidebar">
+    <div class="sidebar-label">Segmento</div>
+    <button class="filter-btn active" onclick="setGrupo('todos')" id="btn-todos">
+      <span style="display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0"></span>
+        Todos
+      </span>
+      <span class="filter-count" id="cnt-todos">100</span>
+    </button>
+    <button class="filter-btn" onclick="setGrupo('Alimentação')" id="btn-Alimentação">
+      <span style="display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:50%;background:#f97316;flex-shrink:0"></span>
+        Alimentação
+      </span>
+      <span class="filter-count" id="cnt-Alimentação">—</span>
+    </button>
+    <button class="filter-btn" onclick="setGrupo('Construção & Reformas')" id="btn-Construção & Reformas">
+      <span style="display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:50%;background:#d97706;flex-shrink:0"></span>
+        Construção & Reformas
+      </span>
+      <span class="filter-count" id="cnt-Construção & Reformas">—</span>
+    </button>
+    <button class="filter-btn" onclick="setGrupo('Elétrica & Climatização')" id="btn-Elétrica & Climatização">
+      <span style="display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:50%;background:#2563eb;flex-shrink:0"></span>
+        Elétrica & Climatização
+      </span>
+      <span class="filter-count" id="cnt-Elétrica & Climatização">—</span>
+    </button>
+    <button class="filter-btn" onclick="setGrupo('Comércio')" id="btn-Comércio">
+      <span style="display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:50%;background:#7c3aed;flex-shrink:0"></span>
+        Comércio
+      </span>
+      <span class="filter-count" id="cnt-Comércio">—</span>
+    </button>
+    <button class="filter-btn" onclick="setGrupo('Outros Serviços')" id="btn-Outros Serviços">
+      <span style="display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:50%;background:#6b7280;flex-shrink:0"></span>
+        Outros Serviços
+      </span>
+      <span class="filter-count" id="cnt-Outros Serviços">—</span>
+    </button>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-label">Tipo</div>
+    <button class="filter-btn" onclick="setTipo('todos')" id="tipo-todos" style="color:var(--text)">
+      <span style="display:flex;align-items:center;gap:8px">Todos os tipos</span>
+      <span class="filter-count"></span>
+    </button>
+    <button class="filter-btn" onclick="setTipo('MEI')" id="tipo-MEI">
+      <span>MEI</span>
+    </button>
+    <button class="filter-btn" onclick="setTipo('ME')" id="tipo-ME">
+      <span>ME</span>
+    </button>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-label">Contato</div>
+    <button class="filter-btn" onclick="setContato('todos')" id="contato-todos" style="color:var(--text)">
+      <span>Todos</span>
+    </button>
+    <button class="filter-btn" onclick="setContato('comTel')" id="contato-comTel">
+      <span>Com telefone</span>
+    </button>
+    <button class="filter-btn" onclick="setContato('comEmail')" id="contato-comEmail">
+      <span>Com email</span>
+    </button>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+
+    <div class="top-row">
+      <div class="search-wrap">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="search-input" type="text" id="searchInput" placeholder="Buscar empresa, sócio, cidade..." oninput="render()">
+      </div>
+      <div class="stats-chips">
+        <div class="chip"><span class="chip-num" id="chipTotal">100</span> empresas</div>
+        <div class="chip"><span class="chip-num" id="chipTel">—</span> com tel.</div>
+        <div class="chip"><span class="chip-num" id="chipEmail">—</span> com email</div>
+      </div>
+    </div>
+
+    <div class="result-header">
+      <div class="result-count"><strong id="resultCount">100</strong> resultados</div>
+      <button class="btn-export" onclick="exportarXLSX()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Exportar lista
+      </button>
+    </div>
+
+    <div class="cards-grid" id="cardsGrid"></div>
+    <div class="empty" id="emptyState" style="display:none">
+      <div class="empty-icon">🔍</div>
+      <h3>Nenhum resultado</h3>
+      <p>Tente ajustar os filtros ou a busca.</p>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const LEADS = [{"cnpj": "65689675000135", "empresa": "Luisa Damaceno Pinto", "socio": "Luisa Damaceno Pinto", "telefone": "(21) 2628-0313", "email": "luisadamaceno.45@gmail.com", "cidade": "Niterói", "uf": "RJ", "mei": "MEI", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689680000148", "empresa": "Moises Nathan Costa De Oliveira", "socio": "Moises Nathan Costa De Oliveira", "telefone": "(65) 99307-6842", "email": "abertura@maismei.com.br", "cidade": "Cuiabá", "uf": "MT", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689682000137", "empresa": "Erica Natalia Alves De Sousa Santos Viana", "socio": "Erica Natalia Alves De Sousa Santos Viana", "telefone": "(12) 99912-8890", "email": "ericanatalia2712@gmail.com", "cidade": "Taubaté", "uf": "SP", "mei": "MEI", "cnae": "Fabricação de produtos de padaria e confeitaria com predominância de produção própria", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689683000181", "empresa": "Nikolly Damas De Almeida Tinoco", "socio": "Nikolly Damas De Almeida Tinoco", "telefone": "(21) 96604-1776", "email": "damasnikolly@gmail.com", "cidade": "Maricá", "uf": "RJ", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689691000128", "empresa": "Luiz Carlos De Jesus Silva", "socio": "Luiz Carlos De Jesus Silva", "telefone": "(62) 99281-6320", "email": "soudasilviasoares@gmail.com", "cidade": "Aparecida De Goiânia", "uf": "GO", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689700000180", "empresa": "Gleidston Gomes Goncalves", "socio": "Gleidston Gomes Goncalves", "telefone": "(24) 99209-5330", "email": "gleidston.goncalves@gmail.com", "cidade": "Paraíba Do Sul", "uf": "RJ", "mei": "MEI", "cnae": "Promoção de vendas", "grupo": "Outros Serviços", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689703000114", "empresa": "Tatieli Barbosa Ferreira", "socio": "Tatieli Barbosa Ferreira", "telefone": "(51) 99628-0265", "email": "tatieli.ferreira@hotmail.com", "cidade": "Caraá", "uf": "RS", "mei": "MEI", "cnae": "Comércio varejista de material elétrico", "grupo": "Elétrica & Climatização", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689704000169", "empresa": "Anaide Simoni De Souza Adriano Da Silva", "socio": "Anaide Simoni De Souza Adriano Da Silva", "telefone": "(11) 1111-1111", "email": "amr7hidraulica@gmail.com", "cidade": "São Paulo", "uf": "SP", "mei": "MEI", "cnae": "Instalações hidráulicas, sanitárias e de gás", "grupo": "Construção & Reformas", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689706000158", "empresa": "Joelson Santos Pereira", "socio": "Joelson Santos Pereira", "telefone": "(77) 98148-1687", "email": "churrascarianopalitovca@gmail.com", "cidade": "Vitória Da Conquista", "uf": "BA", "mei": "MEI", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689718000182", "empresa": "Maycon Jeckson Fernandes De Souza", "socio": "Maycon Jeckson Fernandes De Souza", "telefone": "(27) 98892-1403", "email": "mayconjeckson8@gmail.com", "cidade": "Vila Velha", "uf": "ES", "mei": "MEI", "cnae": "Serviços de alimentação para eventos e recepções - bufê", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689719000127", "empresa": "Pedro Santo Silva De Oliveira", "socio": "Pedro Santo Silva De Oliveira", "telefone": "(51) 98953-6699", "email": "pedrodeoliveira.7601@gmail.com", "cidade": "Viamão", "uf": "RS", "mei": "MEI", "cnae": "Fabricação de biscoitos e bolachas", "grupo": "Outros Serviços", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689723000195", "empresa": "Albertino Gomes Dos Santos Filho", "socio": "Albertino Gomes Dos Santos Filho", "telefone": "(11) 99452-8651", "email": "albertinof331@gmail.com", "cidade": "São Paulo", "uf": "SP", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689731000131", "empresa": "Maria Eduarda Nolasco Furini", "socio": "Maria Eduarda Nolasco Furini", "telefone": "(67) 99910-4720", "email": "mariaeduardafurini5@gmail.com", "cidade": "Maracaju", "uf": "MS", "mei": "MEI", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689733000120", "empresa": "Maria Luiza De Lima Silva", "socio": "Maria Luiza De Lima Silva", "telefone": "(82) 99618-7444", "email": "amariaal082@gmail.com", "cidade": "Maceió", "uf": "AL", "mei": "MEI", "cnae": "Lanchonetes, casas de chá, de sucos e similares", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689734000175", "empresa": "Natiele Conceicao Gonzaga", "socio": "Natiele Conceicao Gonzaga", "telefone": "(48) 99660-6560", "email": "natielegonzaga91@gmail.com", "cidade": "Florianópolis", "uf": "SC", "mei": "MEI", "cnae": "Restaurantes e similares", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689742000111", "empresa": "Andre Luis Santos Muniz", "socio": "Andre Luis Santos Muniz", "telefone": "(22) 99986-4366", "email": "amservicoseletricos2018@gmail.com", "cidade": "Macaé", "uf": "RJ", "mei": "MEI", "cnae": "Instalação e manutenção elétrica", "grupo": "Elétrica & Climatização", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689744000100", "empresa": "Eduardo Luiz Lima De Quadros", "socio": "Eduardo Luiz Lima De Quadros", "telefone": "(47) 99973-4505", "email": "eduardo.el455@gmail.com", "cidade": "Bombinhas", "uf": "SC", "mei": "MEI", "cnae": "Serviços de montagem de móveis de qualquer material", "grupo": "Construção & Reformas", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689745000155", "empresa": "Ednelson Da Silva Santos", "socio": "Ednelson Da Silva Santos", "telefone": "(21) 98380-4008", "email": "abertura@maismei.com.br", "cidade": "Rio De Janeiro", "uf": "RJ", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689761000148", "empresa": "Thalita De Jesus Lemes", "socio": "Thalita De Jesus Lemes", "telefone": "(61) 99102-1072", "email": "thalita.jlemes@gmail.com", "cidade": "Brasília", "uf": "DF", "mei": "MEI", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689766000170", "empresa": "Fabiana Da Silva Verissimo", "socio": "Fabiana Da Silva Verissimo", "telefone": "(55) 3246-1624", "email": "fab.verissimo@hotmail.com", "cidade": "Porto Alegre", "uf": "RS", "mei": "MEI", "cnae": "Restaurantes e similares", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689773000172", "empresa": "Bruna Franciele Batista Cardoso", "socio": "Bruna Franciele Batista Cardoso", "telefone": "(48) 98867-1091", "email": "morrisgarcia251@gmail.com", "cidade": "Florianópolis", "uf": "SC", "mei": "MEI", "cnae": "Lanchonetes, casas de chá, de sucos e similares", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689774000117", "empresa": "Luciano Silveira Martins", "socio": "Luciano Silveira Martins", "telefone": "(51) 99929-5202", "email": "luciano.s.martins@hotmail.com", "cidade": "Rio Das Ostras", "uf": "RJ", "mei": "MEI", "cnae": "Fabricação de produtos de padaria e confeitaria com predominância de produção própria", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689778000103", "empresa": "Diogo Do Prado", "socio": "Diogo Do Prado", "telefone": "(47) 98844-5306", "email": "dopradodiogo@gmail.com", "cidade": "Blumenau", "uf": "SC", "mei": "MEI", "cnae": "Fabricação de móveis de outros materiais, exceto madeira e metal", "grupo": "Construção & Reformas", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689780000174", "empresa": "Luiz Alexandre De Moura Braga", "socio": "Luiz Alexandre De Moura Braga", "telefone": "(67) 99281-7166", "email": "bragaluizelet@gmail.com", "cidade": "Campo Grande", "uf": "MS", "mei": "MEI", "cnae": "Instalação e manutenção elétrica", "grupo": "Elétrica & Climatização", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689781000119", "empresa": "Thiago Da Costa Barbosa", "socio": "Thiago Da Costa Barbosa", "telefone": "(11) 99725-1971", "email": "organicoemcasa2@gmail.com", "cidade": "São Paulo", "uf": "SP", "mei": "MEI", "cnae": "Comércio varejista de hortifrutigranjeiros", "grupo": "Comércio", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689782000163", "empresa": "Ewerton Leno Muniz Da Silva", "socio": "Ewerton Leno Muniz Da Silva", "telefone": "(92) 98447-8099", "email": "abertura@maismei.com.br", "cidade": "Manaus", "uf": "AM", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689785000105", "empresa": "Maria Do Carmo Carlos Dias", "socio": "Maria Do Carmo Carlos Dias", "telefone": "(83) 99394-4026", "email": "carlosmariacarlos191148@mail.com", "cidade": "João Pessoa", "uf": "PB", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689795000132", "empresa": "Bruna Martins Santos", "socio": "Bruna Martins Santos", "telefone": "(67) 99874-8194", "email": "brunamartinssantos36@gmail.com", "cidade": "Campo Grande", "uf": "MS", "mei": "MEI", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689798000176", "empresa": "Luiz Felipe Almeida De Jesus", "socio": "Luiz Felipe Almeida De Jesus", "telefone": "(71) 99828-6863", "email": "luizfelipep5500@gmail.com", "cidade": "Salvador", "uf": "BA", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689809000118", "empresa": "Flavio Liarte Dos Reis", "socio": "Flavio Liarte Dos Reis", "telefone": "(99) 99180-6515", "email": "jrj9437@gmail.com", "cidade": "Imperatriz", "uf": "MA", "mei": "MEI", "cnae": "Serviços de borracharia para veículos automotores", "grupo": "Outros Serviços", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689811000197", "empresa": "Emanoel Guedes Santos", "socio": "Emanoel Guedes Santos", "telefone": "(81) 99738-4067", "email": "olufan.8@gmail.com", "cidade": "Olinda", "uf": "PE", "mei": "MEI", "cnae": "Horticultura, exceto morango", "grupo": "Outros Serviços", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689816000110", "empresa": "Niedja Katiany Fernandes Silva", "socio": "Niedja Katiany Fernandes Silva", "telefone": "(83) 99142-0611", "email": "upboundigital@gmail.com", "cidade": "João Pessoa", "uf": "PB", "mei": "MEI", "cnae": "Promoção de vendas", "grupo": "Outros Serviços", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689818000109", "empresa": "Douglas Da Cruz Carvalho", "socio": "Douglas Da Cruz Carvalho", "telefone": "(14) 99677-1941", "email": "tecnalclimatizacao@hotmail.com", "cidade": "Pederneiras", "uf": "SP", "mei": "MEI", "cnae": "Instalação e manutenção de sistemas centrais de ar condicionado, de ventilação e refrigeração", "grupo": "Elétrica & Climatização", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689819000153", "empresa": "Maria Regilene De Sousa Alves", "socio": "Maria Regilene De Sousa Alves", "telefone": "(11) 1480-4226", "email": "regilenesousa2023@gmail.com", "cidade": "São Paulo", "uf": "SP", "mei": "MEI", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689822000177", "empresa": "Henrique Ferreira Loche Moreira", "socio": "Henrique Ferreira Loche Moreira", "telefone": "(11) 99493-9180", "email": "henriqueloche28@gmail.com", "cidade": "São Paulo", "uf": "SP", "mei": "MEI", "cnae": "Serviços de organização de feiras, congressos, exposições e festas", "grupo": "Outros Serviços", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689826000155", "empresa": "Wellington Fagundes Dos Santos", "socio": "Wellington Fagundes Dos Santos", "telefone": "(21) 97762-9673", "email": "wellyngtonfagundes@gmail.com", "cidade": "Queimados", "uf": "RJ", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689835000146", "empresa": "Alessandra Pereira Costa", "socio": "Alessandra Pereira Costa", "telefone": "(11) 96646-7311", "email": "alepereira2105@gmail.com", "cidade": "São Paulo", "uf": "SP", "mei": "MEI", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689836000190", "empresa": "Lucas Nossa Souza", "socio": "Lucas Nossa Souza", "telefone": "(27) 99979-9242", "email": "lucassouza975252@gmail.com", "cidade": "Vitória", "uf": "ES", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689839000124", "empresa": "Raphaelle Vitoria Costa Barbosa", "socio": "Raphaelle Vitoria Costa Barbosa", "telefone": "(21) 97643-0861", "email": "abertura@maismei.com.br", "cidade": "São Gonçalo", "uf": "RJ", "mei": "MEI", "cnae": "Lanchonetes, casas de chá, de sucos e similares", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689844000137", "empresa": "Francisco Lucas Carvalho Ponte", "socio": "Francisco Lucas Carvalho Ponte", "telefone": "(85) 3497-4546", "email": "flucascponte@gmail.com", "cidade": "Fortaleza", "uf": "CE", "mei": "MEI", "cnae": "Lanchonetes, casas de chá, de sucos e similares", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689849000160", "empresa": "Cristhian Eddy Tapuna Ajhuacho", "socio": "Cristhian Eddy Tapuna Ajhuacho", "telefone": "(46) 3455-6678", "email": "ceta13f1996@gmail.com", "cidade": "São Paulo", "uf": "SP", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689852000183", "empresa": "Euria Reis Macedo", "socio": "Euria Reis Macedo", "telefone": "(71) 98625-5454", "email": "abertura@maismei.com.br", "cidade": "Salvador", "uf": "BA", "mei": "MEI", "cnae": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - minimercados, mercearias e armazéns", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689854000172", "empresa": "Ederson Andrade Costa", "socio": "Ederson Andrade Costa", "telefone": "(28) 99923-4680", "email": "edersonandradecosta90@gmail.com", "cidade": "Marataízes", "uf": "ES", "mei": "ME", "cnae": "Atividades de cobranças e informações cadastrais", "grupo": "Outros Serviços", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "65689857000106", "empresa": "Ana Clara De Souza Feitosa", "socio": "Ana Clara De Souza Feitosa", "telefone": "(85) 99914-9480", "email": "ana.s.f654321@gmail.com", "cidade": "Fortaleza", "uf": "CE", "mei": "ME", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "15/03/2026", "situacao": "Ativa"}, {"cnpj": "48408799000348", "empresa": "Silva Locacoes De Maquinas Pesadas Ltda", "socio": "Daniela Da Silva", "telefone": "(71) 99218-1168", "email": "silvalocacoes22@gmail.com", "cidade": "Recife", "uf": "PE", "mei": "ME", "cnae": "Aluguel de máquinas e equipamentos para construção sem operador, exceto andaimes", "grupo": "Construção & Reformas", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683242000172", "empresa": "Samara Sousa Ribeiro", "socio": "Samara Sousa Ribeiro", "telefone": "(62) 99375-6127", "email": "sousasamy705@gmail.com", "cidade": "Goiânia", "uf": "GO", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683243000117", "empresa": "Douglas Rafael Rodrigues Pereira", "socio": "Douglas Rafael Rodrigues Pereira", "telefone": "(62) 98267-0352", "email": "douglass.gremista@gmail.com", "cidade": "Aparecida De Goiânia", "uf": "GO", "mei": "MEI", "cnae": "Instalação e manutenção elétrica", "grupo": "Elétrica & Climatização", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683246000150", "empresa": "Ana Paula Stopato", "socio": "Ana Paula Stopato", "telefone": "(12) 99882-6925", "email": "stopatoanapaula@gmail.com", "cidade": "São Sebastião", "uf": "SP", "mei": "MEI", "cnae": "Serviços de alimentação para eventos e recepções - bufê", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683254000105", "empresa": "Reinaldo Almeida Silva", "socio": "Reinaldo Almeida Silva", "telefone": "(11) 5330-1570", "email": "reinaldoalmeida67@gmail.com", "cidade": "Itaquaquecetuba", "uf": "SP", "mei": "MEI", "cnae": "Reparação de artigos do mobiliário", "grupo": "Outros Serviços", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683266000121", "empresa": "Leonardo Silva Do Nascimento", "socio": "Leonardo Silva Do Nascimento", "telefone": "(13) 97412-3509", "email": "lvlrefrigeracao@gmail.com", "cidade": "Guarujá", "uf": "SP", "mei": "MEI", "cnae": "Instalação e manutenção de sistemas centrais de ar condicionado, de ventilação e refrigeração", "grupo": "Elétrica & Climatização", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683267000176", "empresa": "Natalia Rodrigues Nobre", "socio": "Natalia Rodrigues Nobre", "telefone": "(85) 98160-6706", "email": "natalianobre123@icloud.com", "cidade": "Fortaleza", "uf": "CE", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683272000189", "empresa": "Lauren Goncalves De Jesus", "socio": "Lauren Goncalves De Jesus", "telefone": "(73) 3521-3969", "email": "laurengoncalves937@gmail.com", "cidade": "Jequié", "uf": "BA", "mei": "MEI", "cnae": "Comércio varejista de cosméticos, produtos de perfumaria e de higiene pessoal", "grupo": "Comércio", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683276000167", "empresa": "Alana Ferreira De Almeida", "socio": "Alana Ferreira De Almeida", "telefone": "(24) 3377-4572", "email": "marlonfdealmeida@gmail.com", "cidade": "Angra Dos Reis", "uf": "RJ", "mei": "MEI", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683279000109", "empresa": "Carlos Eduardo Ribeiro Godinho", "socio": "Carlos Eduardo Ribeiro Godinho", "telefone": "(91) 99134-3612", "email": "godinho.eletro@gmail.com", "cidade": "Belém", "uf": "PA", "mei": "MEI", "cnae": "Instalação e manutenção elétrica", "grupo": "Elétrica & Climatização", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683283000169", "empresa": "Maikon De Lima Dias", "socio": "Maikon De Lima Dias", "telefone": "(54) 99946-4545", "email": "limadiiass@gmail.com", "cidade": "Florianópolis", "uf": "SC", "mei": "MEI", "cnae": "Lanchonetes, casas de chá, de sucos e similares", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683301000102", "empresa": "Evellen Macedo De Oliveira", "socio": "Evellen Macedo De Oliveira", "telefone": "(21) 99194-4999", "email": "evellenellen@gmail.com", "cidade": "Nova Iguaçu", "uf": "RJ", "mei": "MEI", "cnae": "Lanchonetes, casas de chá, de sucos e similares", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683303000100", "empresa": "Adriano Rocha Choto", "socio": "Adriano Rocha Choto", "telefone": "(68) 99292-2304", "email": "adrianorocha202020@gmail.com", "cidade": "Rio Branco", "uf": "AC", "mei": "MEI", "cnae": "Outras atividades de serviços pessoais não especificadas anteriormente", "grupo": "Outros Serviços", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683304000146", "empresa": "Jennifer Maiara De Jesus Viana", "socio": "Jennifer Maiara De Jesus Viana", "telefone": "(21) 2493-9956", "email": "jennyvianna5@gmail.com", "cidade": "Rio De Janeiro", "uf": "RJ", "mei": "MEI", "cnae": "Lanchonetes, casas de chá, de sucos e similares", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683307000180", "empresa": "Earley Daniel De Jesus Pereira Da Silva", "socio": "Earley Daniel De Jesus Pereira Da Silva", "telefone": "(98) 98135-2835", "email": "abertura@maismei.com.br", "cidade": "São Luís", "uf": "MA", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683313000137", "empresa": "Larissa Cristina Barbosa De Souza", "socio": "Larissa Cristina Barbosa De Souza", "telefone": "(21) 3567-6530", "email": "fornoesabordailha@gmail.com", "cidade": "Rio De Janeiro", "uf": "RJ", "mei": "MEI", "cnae": "Fabricação de produtos de panificação industrial", "grupo": "Outros Serviços", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683319000104", "empresa": "Jardesson Elienai Cabral Cordeiro", "socio": "Jardesson Elienai Cabral Cordeiro", "telefone": "(62) 99629-1497", "email": "jessicajardesson@outlook.com", "cidade": "Goiânia", "uf": "GO", "mei": "MEI", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683321000183", "empresa": "Thiago Ribeiro Dos Santos", "socio": "Thiago Ribeiro Dos Santos", "telefone": "(66) 99692-1053", "email": "thiagoribeiromt45@gmail.com", "cidade": "Ipiranga Do Norte", "uf": "MT", "mei": "MEI", "cnae": "Comércio varejista de bebidas", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683323000172", "empresa": "Douglas Coloni De Oliveira", "socio": "Douglas Coloni De Oliveira", "telefone": "(15) 99856-8525", "email": "colonidouglas26@gmail.com", "cidade": "Sorocaba", "uf": "SP", "mei": "MEI", "cnae": "Bares e outros estabelecimentos especializados em servir bebidas, com entretenimento", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683330000174", "empresa": "Larissa Dos Santos Silva", "socio": "Larissa Dos Santos Silva", "telefone": "(11) 98553-1292", "email": "larissasilva266@gmail.com", "cidade": "São Paulo", "uf": "SP", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683335000105", "empresa": "Gabriel Martins Pessoa", "socio": "Gabriel Martins Pessoa", "telefone": "(92) 98229-5779", "email": "pessoa_gabriel@hotmail.com", "cidade": "Manaus", "uf": "AM", "mei": "MEI", "cnae": "Carga e descarga", "grupo": "Outros Serviços", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683339000185", "empresa": "Clebson Santana Da Silva", "socio": "Clebson Santana Da Silva", "telefone": "(77) 99911-9715", "email": "clebsonsantanadasilva613@gmail.com", "cidade": "Barreiras", "uf": "BA", "mei": "MEI", "cnae": "Obras de alvenaria", "grupo": "Construção & Reformas", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683341000154", "empresa": "Kaique Mendes De Araujo", "socio": "Kaique Mendes De Araujo", "telefone": "(11) 4566-5956", "email": "kmnegocios0906@gmail.com", "cidade": "Itapecerica Da Serra", "uf": "SP", "mei": "MEI", "cnae": "Obras de alvenaria", "grupo": "Construção & Reformas", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683343000143", "empresa": "Wesley Everton Mansur", "socio": "Wesley Everton Mansur", "telefone": "(11) 1150-7297", "email": "wesleymmansur@gmail.com", "cidade": "São Paulo", "uf": "SP", "mei": "MEI", "cnae": "Instalação e manutenção de sistemas centrais de ar condicionado, de ventilação e refrigeração", "grupo": "Elétrica & Climatização", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683345000132", "empresa": "Antonio Edson Alves De Araujo", "socio": "Antonio Edson Alves De Araujo", "telefone": "(11) 99685-8547", "email": "italogael511@gamil.com", "cidade": "São Paulo", "uf": "SP", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683346000187", "empresa": "Beatriz Vitoria Da Silva Bonfim", "socio": "Beatriz Vitoria Da Silva Bonfim", "telefone": "(81) 99261-6857", "email": "beatrizvitoriaa37@gmail.com", "cidade": "Porto Alegre", "uf": "RS", "mei": "MEI", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683354000123", "empresa": "Maria Do Socorro Kotarski De Souza", "socio": "Maria Do Socorro Kotarski De Souza", "telefone": "(46) 99914-7152", "email": "tradepedrojunior@gmail.com", "cidade": "Bituruna", "uf": "PR", "mei": "MEI", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683357000167", "empresa": "Alexsandro Martins De Souza", "socio": "Alexsandro Martins De Souza", "telefone": "(21) 98708-0440", "email": "martinsburguer1975@gmail.com", "cidade": "Rio De Janeiro", "uf": "RJ", "mei": "MEI", "cnae": "Fabricação de artefatos diversos de madeira, exceto móveis", "grupo": "Construção & Reformas", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683358000101", "empresa": "Fernando Vagner De Souza", "socio": "Fernando Vagner De Souza", "telefone": "(11) 2468-7400", "email": "pequenaefe@gmail.com", "cidade": "Guarulhos", "uf": "SP", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683361000125", "empresa": "Pedro Lucas Dos Santos Da Costa", "socio": "Pedro Lucas Dos Santos Da Costa", "telefone": "(24) 99307-9025", "email": "pl167723@gmail.com", "cidade": "Magé", "uf": "RJ", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683365000103", "empresa": "Pablo Gimes Tavares", "socio": "Pablo Gimes Tavares", "telefone": "(22) 99798-2908", "email": "pablosilvajr3@gmail.com", "cidade": "Arraial Do Cabo", "uf": "RJ", "mei": "MEI", "cnae": "Obras de alvenaria", "grupo": "Construção & Reformas", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683374000102", "empresa": "Mikaely Teixeira Dos Santos Gomes", "socio": "Mikaely Teixeira Dos Santos Gomes", "telefone": "(11) 96956-7782", "email": "mikaelyeliezer@hotmail.com", "cidade": "Santo André", "uf": "SP", "mei": "MEI", "cnae": "Restaurantes e similares", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683388000118", "empresa": "FJ ENGENHARIA E SERVICOS LTDA", "socio": "Ferdinando Figueiredo Dos Santos", "telefone": "(98) 3300-1358", "email": "ferdisantos@gmail.com", "cidade": "São Luís", "uf": "MA", "mei": "ME", "cnae": "Serviços de engenharia", "grupo": "Outros Serviços", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683392000186", "empresa": "Joao Matheus Batista Cruz", "socio": "Joao Matheus Batista Cruz", "telefone": "(64) 99606-3618", "email": "matheus1270bc@gmail.com", "cidade": "Mineiros", "uf": "GO", "mei": "MEI", "cnae": "Lanchonetes, casas de chá, de sucos e similares", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683396000164", "empresa": "Alessandra Da Silva E Silva", "socio": "Alessandra Da Silva E Silva", "telefone": "(69) 99952-6217", "email": "alessandrasilva0431@gmail.com", "cidade": "Porto Velho", "uf": "RO", "mei": "MEI", "cnae": "Lanchonetes, casas de chá, de sucos e similares", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683397000109", "empresa": "Kathelin Luciana Santos", "socio": "Kathelin Luciana Santos", "telefone": "(11) 99922-5387", "email": "abertura@maismei.com.br", "cidade": "São Paulo", "uf": "SP", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683400000194", "empresa": "Miguel Da Silva Ramos De Almeida", "socio": "Miguel Da Silva Ramos De Almeida", "telefone": "(21) 3606-7279", "email": "ms1820404@gmail.com", "cidade": "São Gonçalo", "uf": "RJ", "mei": "MEI", "cnae": "Lanchonetes, casas de chá, de sucos e similares", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683408000150", "empresa": "Matheus Magno Lima Duarte Dos Santos", "socio": "Matheus Magno Lima Duarte Dos Santos", "telefone": "", "email": "meunumero@gmail.com", "cidade": "Carpina", "uf": "PE", "mei": "ME", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Baixada"}, {"cnpj": "65683415000152", "empresa": "Levi Da Costa Pereira", "socio": "Levi Da Costa Pereira", "telefone": "(85) 99952-3043", "email": "levidacostap@gmail.com", "cidade": "Fortaleza", "uf": "CE", "mei": "MEI", "cnae": "Lanchonetes, casas de chá, de sucos e similares", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683423000107", "empresa": "Francisco Passos Da Silva", "socio": "Francisco Passos Da Silva", "telefone": "(11) 99968-2502", "email": "passosfrancisco895@gmail.com", "cidade": "Itapevi", "uf": "SP", "mei": "MEI", "cnae": "Serviço de poda de árvores para lavouras", "grupo": "Outros Serviços", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683432000190", "empresa": "Edilma Larisse Lima Silva", "socio": "Edilma Larisse Lima Silva", "telefone": "(84) 99985-5838", "email": "jeova.edilma16@gmail.com", "cidade": "Natal", "uf": "RN", "mei": "MEI", "cnae": "Lanchonetes, casas de chá, de sucos e similares", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683433000134", "empresa": "Juliana Ferreira Dos Santos", "socio": "Juliana Ferreira Dos Santos", "telefone": "(11) 1308-3704", "email": "julianafdossantos.06@gmail.com", "cidade": "Araçariguama", "uf": "SP", "mei": "MEI", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683445000169", "empresa": "Ariane Fialho Pereira", "socio": "Ariane Fialho Pereira", "telefone": "(21) 98792-8258", "email": "arianefialho34@gmail.com", "cidade": "Mesquita", "uf": "RJ", "mei": "MEI", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683446000103", "empresa": "Rafael Santana Da Silva", "socio": "Rafael Santana Da Silva", "telefone": "(21) 99754-9100", "email": "rstechinformatica01@gmail.com", "cidade": "Nova Iguaçu", "uf": "RJ", "mei": "MEI", "cnae": "Reparação e manutenção de computadores e de equipamentos periféricos", "grupo": "Outros Serviços", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683451000116", "empresa": "Felipe Eduardo Pradela", "socio": "Felipe Eduardo Pradela", "telefone": "(47) 99185-1964", "email": "felipepradela3@gmail.com", "cidade": "Balneário Camboriú", "uf": "SC", "mei": "MEI", "cnae": "Instalação de painéis publicitários", "grupo": "Outros Serviços", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683457000193", "empresa": "Gilberto Bezerra Da Silva Neto", "socio": "Gilberto Bezerra Da Silva Neto", "telefone": "(77) 99877-7822", "email": "casupoort@gmail.com", "cidade": "Vitória Da Conquista", "uf": "BA", "mei": "MEI", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683459000182", "empresa": "Marco Aurelio Rocha Alves", "socio": "Marco Aurelio Rocha Alves", "telefone": "(21) 97593-8744", "email": "marcoalves84@gmail.com", "cidade": "Duque De Caxias", "uf": "RJ", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683461000151", "empresa": "Rafael Costa Melo", "socio": "Rafael Costa Melo", "telefone": "(11) 98300-9787", "email": "smokebaradega@gmail.com", "cidade": "São Bernardo Do Campo", "uf": "SP", "mei": "MEI", "cnae": "Restaurantes e similares", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683466000184", "empresa": "Daniel Vieira Rodrigues", "socio": "Daniel Vieira Rodrigues", "telefone": "(97) 99170-5717", "email": "dvieirarodrigues69@gmail.com", "cidade": "Manicoré", "uf": "AM", "mei": "MEI", "cnae": "Fabricação de farinha de mandioca e derivados", "grupo": "Outros Serviços", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683467000129", "empresa": "Edmilson Dos Santos Mineis", "socio": "Edmilson Dos Santos Mineis", "telefone": "(35) 3526-8788", "email": "edyy.mineis@gmail.com", "cidade": "Passos", "uf": "MG", "mei": "MEI", "cnae": "Restaurantes e similares", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683470000142", "empresa": "Jessica De Oliveira Galves", "socio": "Jessica De Oliveira Galves", "telefone": "(51) 98127-3330", "email": "abertura@maismei.com.br", "cidade": "Garopaba", "uf": "SC", "mei": "MEI", "cnae": "Serviços ambulantes de alimentação", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683471000197", "empresa": "Alex Adan Kaczmareck", "socio": "Alex Adan Kaczmareck", "telefone": "(45) 99837-0119", "email": "alexadankaczmareck@gmail.com", "cidade": "Cascavel", "uf": "PR", "mei": "MEI", "cnae": "Serviços de pintura de edifícios em geral", "grupo": "Construção & Reformas", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683473000186", "empresa": "Guilherme Nunes Cardoso", "socio": "Guilherme Nunes Cardoso", "telefone": "(51) 99213-9890", "email": "g.cardoso8777@gmail.com", "cidade": "Gravataí", "uf": "RS", "mei": "MEI", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683477000164", "empresa": "Bruno Willamis De Araujo Rosendo Ferreira", "socio": "Bruno Willamis De Araujo Rosendo Ferreira", "telefone": "(81) 98546-2257", "email": "brunowillamis44@gmail.com", "cidade": "Recife", "uf": "PE", "mei": "MEI", "cnae": "Fornecimento de alimentos preparados preponderantemente para consumo domiciliar", "grupo": "Alimentação", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683488000144", "empresa": "Alcinea Rosetti Xavier", "socio": "Alcinea Rosetti Xavier", "telefone": "", "email": "neia_fofinha729@hotmail.com", "cidade": "Vila Velha", "uf": "ES", "mei": "MEI", "cnae": "Atividades de fornecimento de infraestrutura de apoio e assistência a paciente no domicílio", "grupo": "Outros Serviços", "abertura": "14/03/2026", "situacao": "Ativa"}, {"cnpj": "65683490000113", "empresa": "Sergio Costa Ferreira", "socio": "Sergio Costa Ferreira", "telefone": "(13) 99720-9786", "email": "abertura@maismei.com.br", "cidade": "Guarujá", "uf": "SP", "mei": "MEI", "cnae": "Serviços de pintura de edifícios em geral", "grupo": "Construção & Reformas", "abertura": "14/03/2026", "situacao": "Ativa"}];
+
+const GRUPO_COLORS = {
+  'Alimentação':          { bg:'#fff7ed', color:'#c2410c', dot:'#f97316' },
+  'Construção & Reformas':{ bg:'#fffbeb', color:'#b45309', dot:'#d97706' },
+  'Elétrica & Climatização':{ bg:'#eff6ff', color:'#1d4ed8', dot:'#2563eb' },
+  'Comércio':             { bg:'#f5f3ff', color:'#6d28d9', dot:'#7c3aed' },
+  'Outros Serviços':      { bg:'#f9fafb', color:'#374151', dot:'#6b7280' },
+  'Beleza & Estética':    { bg:'#fdf4ff', color:'#86198f', dot:'#c026d3' },
+};
+
+let grupoAtivo = 'todos';
+let tipoAtivo  = 'todos';
+let contatoAtivo = 'todos';
+
+function fmtWpp(tel) {
+  if (!tel) return null;
+  const d = tel.replace(/\D/g,'');
+  if (d.length < 10) return null;
+  return '55' + d;
+}
+
+function getFiltered() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  return LEADS.filter(l => {
+    if (grupoAtivo !== 'todos' && l.grupo !== grupoAtivo) return false;
+    if (tipoAtivo  !== 'todos' && l.mei  !== tipoAtivo)  return false;
+    if (contatoAtivo === 'comTel'   && !l.telefone) return false;
+    if (contatoAtivo === 'comEmail' && !l.email)    return false;
+    if (q) {
+      const hay = (l.empresa+l.socio+l.cidade+l.uf+l.cnae+l.cnpj).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function setGrupo(g) {
+  grupoAtivo = g;
+  document.querySelectorAll('[id^="btn-"]').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + g)?.classList.add('active');
+  render();
+}
+
+function setTipo(t) {
+  tipoAtivo = t;
+  document.querySelectorAll('[id^="tipo-"]').forEach(b => b.classList.remove('active'));
+  document.getElementById('tipo-' + t)?.classList.add('active');
+  render();
+}
+
+function setContato(c) {
+  contatoAtivo = c;
+  document.querySelectorAll('[id^="contato-"]').forEach(b => b.classList.remove('active'));
+  document.getElementById('contato-' + c)?.classList.add('active');
+  render();
+}
+
+function updateSidebarCounts() {
+  const groups = ['Alimentação','Construção & Reformas','Elétrica & Climatização','Comércio','Outros Serviços'];
+  groups.forEach(g => {
+    const cnt = LEADS.filter(l => l.grupo === g).length;
+    const el = document.getElementById('cnt-' + g);
+    if (el) el.textContent = cnt;
+  });
+  document.getElementById('cnt-todos').textContent = LEADS.length;
+}
+
+function render() {
+  const filtered = getFiltered();
+  const grid = document.getElementById('cardsGrid');
+  const empty = document.getElementById('emptyState');
+
+  document.getElementById('resultCount').textContent = filtered.length;
+  document.getElementById('chipTotal').textContent   = filtered.length;
+  document.getElementById('chipTel').textContent     = filtered.filter(l=>l.telefone).length;
+  document.getElementById('chipEmail').textContent   = filtered.filter(l=>l.email).length;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  const gc = GRUPO_COLORS;
+
+  grid.innerHTML = filtered.map(l => {
+    const c = gc[l.grupo] || gc['Outros Serviços'];
+    const wpp = fmtWpp(l.telefone);
+    const badgeClass = l.mei === 'MEI' ? 'mei-badge' : 'me-badge';
+    const tel = l.telefone || '';
+    const email = l.email || '';
+    const cidade = l.cidade ? l.cidade + (l.uf ? ' · ' + l.uf : '') : (l.uf || '');
+    const socio = l.socio || l.empresa;
+
+    return `<div class="lead-card">
+      <div class="card-top">
+        <div class="card-empresa">${esc(l.empresa)}</div>
+        <span class="grupo-badge" style="background:${c.bg};color:${c.color}">${esc(l.grupo)}</span>
+      </div>
+      <div class="card-fields">
+        <div class="card-field">
+          <div class="field-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div>
+            <div class="field-label">Sócio / Responsável</div>
+            <div class="field-val">${esc(socio)}</div>
+          </div>
+        </div>
+        <div class="card-field">
+          <div class="field-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.19h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.88-1.84a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+          <div style="flex:1">
+            <div class="field-label">Telefone</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="field-val mono">${tel ? esc(tel) : '<span class=\'field-val empty\'>não informado</span>'}</div>
+              ${wpp ? `<a class="btn-wpp" href="https://wa.me/${wpp}" target="_blank">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.999 2.001C6.486 2.001 2 6.486 2 12c0 1.887.52 3.65 1.427 5.166L2.001 22l4.944-1.404A9.955 9.955 0 0 0 12 21.999c5.514 0 9.999-4.485 9.999-9.999S17.513 2.001 11.999 2.001z"/></svg>
+                WhatsApp
+              </a>` : ''}
+            </div>
+          </div>
+        </div>
+        <div class="card-field">
+          <div class="field-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <div class="field-label">Email</div>
+            <div class="field-val" style="font-size:12px;word-break:break-all">${email ? esc(email) : '<span class=\'field-val empty\'>não informado</span>'}</div>
+          </div>
+        </div>
+        <div class="card-field">
+          <div class="field-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div>
+            <div class="field-label">Cidade</div>
+            <div class="field-val">${esc(cidade) || '—'}</div>
+          </div>
+        </div>
+        <div class="card-field">
+          <div class="field-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
+          </div>
+          <div>
+            <div class="field-label">Atividade</div>
+            <div class="field-val" style="font-size:12px;color:var(--muted)">${esc(l.cnae)}</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="${badgeClass}">${esc(l.mei)}</span>
+        <span class="card-abertura">Abertura: ${esc(l.abertura)}</span>
+        <span class="card-cnpj">${esc(fmtCNPJ(l.cnpj))}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function fmtCNPJ(c) {
+  if (!c) return '';
+  const d = c.replace(/\D/g,'');
+  if (d.length===14) return d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,'$1.$2.$3/$4-$5');
+  return c;
+}
+
+function exportarXLSX() {
+  const filtered = getFiltered();
+  const headers = ['Empresa','Sócio / Responsável','Telefone','Email','Cidade','UF','Segmento','Tipo','CNAE','CNPJ','Abertura','Situação'];
+  const rows = filtered.map(l => [
+    l.empresa, l.socio, l.telefone, l.email,
+    l.cidade, l.uf, l.grupo, l.mei, l.cnae,
+    fmtCNPJ(l.cnpj), l.abertura, l.situacao
+  ]);
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+  ws['!cols'] = [{wch:30},{wch:28},{wch:18},{wch:32},{wch:20},{wch:6},{wch:22},{wch:6},{wch:50},{wch:22},{wch:12},{wch:10}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Leads');
+  XLSX.writeFile(wb, 'leads_' + new Date().toISOString().slice(0,10) + '.xlsx');
+}
+
+// Init
+updateSidebarCounts();
+setTipo('todos');
+setContato('todos');
+render();
+
+// Update topbar meta
+const com_tel = LEADS.filter(l=>l.telefone).length;
+document.getElementById('topMeta').textContent = `${LEADS.length} empresas · ${com_tel} com telefone`;
+</script>
+</body>
+</html>
