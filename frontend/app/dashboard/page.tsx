@@ -218,11 +218,20 @@ export default function Dashboard() {
                     <td className="p-5 text-[#8a8680]">
                       {limparNome(l.razaosocial, l.socios)}
                     </td>
+                    
+                    {/* COLUNA SEGMENTO ATUALIZADA AQUI */}
                     <td className="p-5">
-                      <span className="bg-[#00e5a010] text-[#00e5a0] border border-[#00e5a030] px-2 py-1 rounded-[4px] text-[10px] font-bold font-mono uppercase">
-                        {traduzirNicho(l.cnaeprincipal)}
-                      </span>
+                      <div className="flex flex-col items-start gap-2">
+                        <span className="bg-[#00e5a010] text-[#00e5a0] border border-[#00e5a030] px-2 py-1 rounded-[4px] text-[10px] font-bold font-mono uppercase">
+                          {traduzirNicho(l.cnaeprincipal)}
+                        </span>
+                        <span className="text-[10px] text-[#6b6b80] font-mono leading-tight max-w-[200px]" title={l.cnaeprincipal}>
+                          {l.cnaeprincipal ? l.cnaeprincipal.toUpperCase() : "RAMO NÃO ESPECIFICADO"}
+                        </span>
+                      </div>
                     </td>
+                    {/* FIM DA ATUALIZAÇÃO */}
+
                     <td className="p-5 text-[#6b6b80] font-medium uppercase text-[11px]">
                       {l.municipio} / {l.uf}
                     </td>
@@ -233,7 +242,7 @@ export default function Dashboard() {
                           target="_blank"
                           className="inline-flex items-center gap-2 bg-[#25d36620] text-[#25d366] border border-[#25d36640] px-4 py-2 rounded-xl text-[10px] font-black hover:bg-[#25d366] hover:text-black transition-all shadow-[0_5px_15px_rgba(37,211,102,0.1)]"
                         >
-                          WHATSAPP
+                          <Phone size={12} /> WHATSAPP
                         </a>
                       ) : (
                         <span className="text-[10px] font-mono text-[#2a2a35]">SEM TEL</span>
